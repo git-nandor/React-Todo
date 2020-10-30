@@ -6,6 +6,19 @@ import axiosConfig from "./axiosConfig";
 export default function App() {
   const [allUserData, setAllUserData] = useState("");
   const [page, setPAge] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const loadingIndicator = (
+    <div className="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
 
   useEffect(() => {
     const handleRequest = async () => {
@@ -21,6 +34,7 @@ export default function App() {
             users: response.data.data
           });
 
+          setLoading(false);
           console.log(response.data); ////////////////////////
         }
       } catch (error) {
@@ -35,7 +49,7 @@ export default function App() {
     console.log("prepare Users List"); //////////////////////
     let preparedUsersList;
 
-    if (allUserData.users) {
+    if (allUserData.users && !loading) {
       preparedUsersList = allUserData.users.map((user, index) => {
         return (
           <div key={user.id}>
@@ -53,32 +67,43 @@ export default function App() {
   };
 
   const handleClickPagination = (step) => {
-    setPAge(allUserData.currentPageNumber + step);
+    setLoading(true);
+    setTimeout(() => {
+      setPAge(allUserData.currentPageNumber + step);
+    }, 1000);
   };
 
   const Pagination = () => {
-    return (
-      <div>
-        <button
-          onClick={() => handleClickPagination(-1)}
-          disabled={allUserData.currentPageNumber === 1}
-        >
-          &larr;
-        </button>
-        <div>{allUserData.currentPageNumber}</div>
-        <button
-          onClick={() => handleClickPagination(+1)}
-          disabled={allUserData.currentPageNumber === allUserData.maxPageNumber}
-        >
-          &rarr;
-        </button>
-      </div>
-    );
+    let preparedPagination = "";
+
+    if (!loading) {
+      preparedPagination = (
+        <>
+          <button
+            onClick={() => handleClickPagination(-1)}
+            disabled={allUserData.currentPageNumber === 1}
+          >
+            &larr;
+          </button>
+          <div>{allUserData.currentPageNumber}</div>
+          <button
+            onClick={() => handleClickPagination(+1)}
+            disabled={
+              allUserData.currentPageNumber === allUserData.maxPageNumber
+            }
+          >
+            &rarr;
+          </button>
+        </>
+      );
+    }
+    return <div>{preparedPagination}</div>;
   };
 
   return (
     <div className="App">
       <h1>React Todo Manager</h1>
+      <div>{loading ? loadingIndicator : ""}</div>
       <UsersList />
       <Pagination />
     </div>
