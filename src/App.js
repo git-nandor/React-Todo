@@ -15,8 +15,8 @@ export default function App() {
         if (response.status === 200) {
           setAllUserData({
             totalUsers: response.data.meta.pagination.total,
-            allPages: response.data.meta.pagination.pages,
-            currentPage: response.data.meta.pagination.page,
+            maxPageNumber: response.data.meta.pagination.pages,
+            currentPageNumber: response.data.meta.pagination.page,
             pageLimit: response.data.meta.pagination.limit,
             users: response.data.data
           });
@@ -53,15 +53,25 @@ export default function App() {
   };
 
   const handleClickPagination = (step) => {
-    setPAge(allUserData.currentPage + step);
+    setPAge(allUserData.currentPageNumber + step);
   };
 
   const Pagination = () => {
     return (
       <div>
-        <button onClick={() => handleClickPagination(-1)}>&larr;</button>
-        <div>{allUserData.currentPage}</div>
-        <button onClick={() => handleClickPagination(+1)}>&rarr;</button>
+        <button
+          onClick={() => handleClickPagination(-1)}
+          disabled={allUserData.currentPageNumber === 1}
+        >
+          &larr;
+        </button>
+        <div>{allUserData.currentPageNumber}</div>
+        <button
+          onClick={() => handleClickPagination(+1)}
+          disabled={allUserData.currentPageNumber === allUserData.maxPageNumber}
+        >
+          &rarr;
+        </button>
       </div>
     );
   };
