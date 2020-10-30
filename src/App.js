@@ -5,11 +5,12 @@ import axiosConfig from "./axiosConfig";
 
 export default function App() {
   const [allUserData, setAllUserData] = useState("");
+  const [page, setPAge] = useState(1);
 
   useEffect(() => {
     const handleRequest = async () => {
       try {
-        const response = await axios.get();
+        const response = await axios.get(`/?page=${page}`);
 
         if (response.status === 200) {
           setAllUserData({
@@ -28,7 +29,7 @@ export default function App() {
     };
 
     handleRequest();
-  }, []);
+  }, [page]);
 
   const UsersList = () => {
     console.log("prepare Users List"); //////////////////////
@@ -51,10 +52,25 @@ export default function App() {
     return <div>{preparedUsersList}</div>;
   };
 
+  const handleClickPagination = (step) => {
+    setPAge(allUserData.currentPage + step);
+  };
+
+  const Pagination = () => {
+    return (
+      <div>
+        <button onClick={() => handleClickPagination(-1)}>&larr;</button>
+        <div>{allUserData.currentPage}</div>
+        <button onClick={() => handleClickPagination(+1)}>&rarr;</button>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <h1>React Todo Manager</h1>
       <UsersList />
+      <Pagination />
     </div>
   );
 }
