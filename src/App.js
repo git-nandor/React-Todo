@@ -12,8 +12,15 @@ export default function App() {
         const response = await axios.get();
 
         if (response.status === 200) {
-          setAllUserData(response.data);
-          console.log(response.data);
+          setAllUserData({
+            totalUsers: response.data.meta.pagination.total,
+            allPages: response.data.meta.pagination.pages,
+            currentPage: response.data.meta.pagination.page,
+            pageLimit: response.data.meta.pagination.limit,
+            users: response.data.data
+          });
+
+          console.log(response.data); ////////////////////////
         }
       } catch (error) {
         console.log("Error in handleRequest: ", error);
@@ -23,10 +30,31 @@ export default function App() {
     handleRequest();
   }, []);
 
+  const UsersList = () => {
+    console.log("prepare Users List"); //////////////////////
+    let preparedUsersList;
+
+    if (allUserData.users) {
+      preparedUsersList = allUserData.users.map((user, index) => {
+        return (
+          <div key={user.id}>
+            <div>{user.name}</div>
+            <div>{user.gender}</div>
+            <div>{user.status}</div>
+          </div>
+        );
+      });
+    } else {
+      preparedUsersList = "";
+    }
+
+    return <div>{preparedUsersList}</div>;
+  };
+
   return (
     <div className="App">
       <h1>React Todo Manager</h1>
-      <div>{JSON.stringify(allUserData)}</div>
+      <UsersList />
     </div>
   );
 }
