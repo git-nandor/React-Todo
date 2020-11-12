@@ -1,45 +1,39 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  useParams,
-  Switch
-} from "react-router-dom";
+import { handleUserTodosRequest, handleUserNameRequest } from './AxiosGetHandler';
+import LoadingIndicator from "./LoadingIndicator";
+import { useParams } from "react-router-dom";
 
-const UserPage = (params) => {
-  console.log("All Params:", params);
+const UserPage = () => {
+  const [loading, setLoading] = useState(true);
   const [userTodos, setUserTodos] = useState("");
-  const { userID, userName } = useParams();
+  const [userName, setUserName] = useState("");
+  const { userID } = useParams();
 
   useEffect(() => {
-    const handleUserTodosRequest = async () => {
+    
+    (async ()=> {
       try {
-        const responseForUserTodos = await axios.get(`/${userID}/todos`);
-        if (responseForUserTodos.status === 200) {
-          setUserTodos(responseForUserTodos.data.data);
-          console.log("GOTTODOOO:", responseForUserTodos.data.data);
-        }
+        setUserTodos(await handleUserTodosRequest(userID));
+        setUserName(await handleUserNameRequest(userID));
+        setLoading(false);
       } catch (error) {
-        console.log("Error in handleUserTodosRequest", error);
+        setLoading(false);
       }
-    };
+    })();
 
-    handleUserTodosRequest();
   }, [userID]);
 
   const todoList = userTodos.length ? (
     userTodos.map((todo, index) => {
-      console.log("Single todo", todo); ////////////
+      
       return (
-        <div key={todo.id}>
+        <div key={todo.id} className='todo-list-item'>
           <input
             type="checkbox"
             defaultChecked={todo.completed}
             disabled={true}
           />
-          <div>{todo.created_at.slice(0, 10)}</div>
+          <div className={todo.completed ? "completed" : ""}>{todo.created_at.slice(0, 10)}</div>
           <div className={todo.completed ? "completed" : ""}>{todo.title}</div>
         </div>
       );
@@ -48,12 +42,16 @@ const UserPage = (params) => {
     <div>{`Nothing to do... ¯\\_(ツ)_/¯`}</div>
   );
 
-  console.log(params);
   return (
-    <>
-      <h2>{userName}'s Todo List</h2>
-      {todoList}
-    </>
+    <div className='user-main-container'>
+      {loading && <LoadingIndicator />}
+      {!loading && (
+        <>
+          <h2>{userName}'s Todo List</h2>
+          <div className='todo-list-container'>{todoList}</div>
+        </> 
+      )}
+    </div>
   );
 };
 

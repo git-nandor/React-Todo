@@ -1,38 +1,24 @@
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  useParams,
-  Switch
-} from "react-router-dom";
-import {
-  useHandleRequestForAllUserData,
-  AxiosForAllUserData,
-  axiSuper
-} from "./AxiosGetHandler";
-import axios from "axios";
-import axiosConfig from "../axiosConfig";
+import { Link } from "react-router-dom";
+import { handleRequestForAllUserData } from "./AxiosGetHandler";
+import LoadingIndicator from "./LoadingIndicator";
 
-console.log("Read HOMEPAGE");
 
 const UsersList = ({ allUserData }) => {
-  console.log("prepare Users List"); //////////////////////
-
   return allUserData.users
     ? allUserData.users.map((user, index) => {
         return (
-          <div key={user.id}>
+          <div key={user.id} className="user-list-item">
             <Link
+              className="user-list-link"
               to={{
                 pathname: `/user/${user.id}/todos`,
-                state: { userName: `${user.name}` }
               }}
             >
               {user.name}
             </Link>
-            <div>{user.gender}</div>
-            <div>{user.status}</div>
+            <div className="user-list-gender">{user.gender}</div>
+            <div className="user-list-status">{user.status}</div>
           </div>
         );
       })
@@ -47,14 +33,14 @@ const Pagination = (props) => {
   };
 
   return (
-    <>
+    <div className='pagination'>
       <button
         onClick={() => handleClickPagination(-1)}
         disabled={props.allUserData.currentPageNumber === 1}
       >
         &larr;
       </button>
-      <div>{props.allUserData.currentPageNumber}</div>
+      <div className='page-number'>{props.allUserData.currentPageNumber}</div>
       <button
         onClick={() => handleClickPagination(+1)}
         disabled={
@@ -64,92 +50,40 @@ const Pagination = (props) => {
       >
         &rarr;
       </button>
-    </>
+    </div>
   );
 };
 
-const LoadingIndicator = () => (
-  <div className="lds-roller">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-);
-
-const HomePage = () => {
+const HomePage = (params) => {
   const [allUserData, setAllUserData] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    const handleAllUserDataRequest = async () => {
+
+    (async () => {
       try {
-        const responseForAllUserData = await axios.get(`/?page=${page}`);
-
-        if (responseForAllUserData.status === 200) {
-          setAllUserData({
-            totalUsers: responseForAllUserData.data.meta.pagination.total,
-            maxPageNumber: responseForAllUserData.data.meta.pagination.pages,
-            currentPageNumber: responseForAllUserData.data.meta.pagination.page,
-            pageLimit: responseForAllUserData.data.meta.pagination.limit,
-            users: responseForAllUserData.data.data
-          });
-
-          setLoading(false);
-          console.log(responseForAllUserData.data); ////////////////////////
-        }
+        setAllUserData(await handleRequestForAllUserData(page));
+        setLoading(false);
       } catch (error) {
-        console.log("Error in handleAllUserDataRequest: ", error);
+        setLoading(false);
       }
-    };
+    })();
 
-    handleAllUserDataRequest();
-
-    setLoading(false);
   }, [page]);
 
-  /*
-    const handleAllUserDataRequest = async () => {
-      try {
-        const responseForAllUserData = await axios.get(`/?page=${page}`);
-
-        if (responseForAllUserData.status === 200) {
-          setAllUserData({
-            totalUsers: responseForAllUserData.data.meta.pagination.total,
-            maxPageNumber: responseForAllUserData.data.meta.pagination.pages,
-            currentPageNumber: responseForAllUserData.data.meta.pagination.page,
-            pageLimit: responseForAllUserData.data.meta.pagination.limit,
-            users: responseForAllUserData.data.data
-          });
-
-          setLoading(false);
-          console.log(responseForAllUserData.data); ////////////////////////
-        }
-      } catch (error) {
-        console.log("Error in handleAllUserDataRequest: ", error);
-      }
-    };
-
-    handleAllUserDataRequest();
-    */
-
   return (
-    <>
+    <div className="main-container">
       <h1>Home Page</h1>
       {loading && <LoadingIndicator />}
       {!loading && (
-        <>
+        <div className="user-list-container">
           <UsersList allUserData={allUserData} />
           <Pagination allUserData={allUserData} setPage={setPage} />
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 
