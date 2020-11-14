@@ -1,5 +1,5 @@
-import axios from "axios";
-import axiosConfig from "../axiosConfig";
+import axios from "../apiClient";
+
 
 export const handleRequestForAllUserData = async (page) => {
   let allUserData = null;
