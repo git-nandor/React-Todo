@@ -59,6 +59,17 @@
   text-decoration: line-through;
   color: #a3a3a3;
 }
+.add-user-form-container {
+  text-align: center;
+}
+
+.add-user-form label {
+  margin-left: 5px;
+}
+.form-section {
+  margin: 10px;
+}
+
 .lds-roller {
   display: inline-block;
   position: relative;
@@ -143,3 +154,4 @@
     transform: rotate(360deg);
   }
 }
+

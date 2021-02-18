@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { handleUserTodosRequest, handleUserNameRequest } from './AxiosGetHandler';
-import LoadingIndicator from "./LoadingIndicator";
+import { handleUserTodosRequest, handleUserNameRequest } from '../Components/AxiosGetHandler';
+import LoadingIndicator from "../Components/UI/LoadingIndicator";
 import { useParams } from "react-router-dom";
 
 const UserPage = () => {

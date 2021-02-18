@@ -3,6 +3,6 @@ import axios from "axios";
 
 axios.defaults.baseURL = "https://gorest.co.in/public-api/users";
 axios.defaults.headers.common["Authorization"] =
-  "c97f8abacf89833240e8a93555c8a9ff095f4ab0713cc6d309226c8562193612";
+  "Bearer fb1e050b3d558518bf9ae65b05e26be53347affef0732cb8b60c664deaddf382";
   
   export default axios;
